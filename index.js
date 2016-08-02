@@ -6,6 +6,7 @@
   var port = 8085;
 
   var User = require('./server-assets/models/user');
+  var Monster = require('./server-assets/models/monster');
 
   server.use(bodyParser.json())
 
@@ -36,6 +37,30 @@
     res.send('User update successful');
   })
 
+  server.post('/monsters', function(req, res) {
+    if(!req.body.name){
+      return res.send({error: 'YOU CANNONT CREATE A MONSTER WITHOUT A NAME'})
+    }
+    Monster.create(req.body.name, req.body.type, req.body.weapon, req.body.job);
+    return res.send({message: 'Successfully created a new Monster, please save us :( '})
+  })
+  
+  server.get('/monsters', function(req, res) {
+    
+    if(req.query.x){
+      return res.send(Monster.getByValue(req.query.x));
+    }
+    
+    return res.send(Monster.getAll());
+  })
+
+  server.get('/monsters/:id', function(req, res) {
+    return res.send(Monster.get(req.params.id));
+  })
+
+  server.put('/monsters/:id', function(req, res) {
+    return res.send(Monster.edit(req.params.id, req.body.monster));
+  })
 
   server.listen(port, function(){
     console.log('The server is alive and kicking on port:', port);
